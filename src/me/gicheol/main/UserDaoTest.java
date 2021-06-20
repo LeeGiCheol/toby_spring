@@ -1,14 +1,18 @@
 package me.gicheol.main;
 
+import me.gicheol.dao.ConnectionMaker;
+import me.gicheol.dao.DConnectionMaker;
+import me.gicheol.dao.NConnectionMaker;
 import me.gicheol.dao.UserDao;
 import me.gicheol.domain.User;
 
 import java.sql.SQLException;
 
-public class Main {
+public class UserDaoTest {
 
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
-        UserDao userDao = new UserDao();
+        ConnectionMaker connectionMaker = new NConnectionMaker();
+        UserDao userDao = new UserDao(connectionMaker);
 
         User user = new User();
         user.setId("LEEGICHEOL");
