@@ -4,7 +4,7 @@ import me.gicheol.domain.User;
 
 import java.sql.*;
 
-public class UserDao {
+public abstract class UserDao {
 
     public void add(User user) throws ClassNotFoundException, SQLException {
         Connection c = getConnection();
@@ -48,10 +48,6 @@ public class UserDao {
     }
 
 
-    private Connection getConnection() throws ClassNotFoundException, SQLException {
-        Class.forName("com.mysql.jdbc.Driver");
-        return DriverManager.getConnection("jdbc:mysql://localhost/toby_spring?serverTimezone=UTC",
-                "toby_spring", "toby_spring");
-    }
+    public abstract Connection getConnection() throws ClassNotFoundException, SQLException;
 
 }
