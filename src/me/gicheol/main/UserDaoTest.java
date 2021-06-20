@@ -1,9 +1,6 @@
 package me.gicheol.main;
 
-import me.gicheol.dao.ConnectionMaker;
-import me.gicheol.dao.DConnectionMaker;
-import me.gicheol.dao.NConnectionMaker;
-import me.gicheol.dao.UserDao;
+import me.gicheol.dao.*;
 import me.gicheol.domain.User;
 
 import java.sql.SQLException;
@@ -11,8 +8,7 @@ import java.sql.SQLException;
 public class UserDaoTest {
 
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
-        ConnectionMaker connectionMaker = new NConnectionMaker();
-        UserDao userDao = new UserDao(connectionMaker);
+        UserDao userDao = new DaoFactory().userDao();
 
         User user = new User();
         user.setId("LEEGICHEOL");
