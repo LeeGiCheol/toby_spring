@@ -21,8 +21,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "/applicationContext.xml")
-@DirtiesContext
+@ContextConfiguration(locations = "/test-applicationContext.xml")
 public class UserDaoTest {
 
     @Autowired
@@ -35,12 +34,6 @@ public class UserDaoTest {
 
     @Before
     public void setUp() {
-        DataSource dataSource = new SingleConnectionDataSource(
-            "jdbc:mysql://localhost/test_toby_spring?serverTimezone=UTC", "toby_spring", "toby_spring", true
-        );
-
-        this.userDao.setDataSource(dataSource);
-
         this.user1 = new User("LEEGICHEOL", "기철", "12345");
         this.user2 = new User("LLL", "기찰", "09876");
         this.user3 = new User("GCLEE", "기촐", "54321");
