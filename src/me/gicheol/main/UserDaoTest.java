@@ -1,16 +1,20 @@
 package me.gicheol.main;
 
-import me.gicheol.dao.*;
+import me.gicheol.dao.UserDao;
 import me.gicheol.domain.User;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.GenericXmlApplicationContext;
+import org.springframework.jdbc.datasource.SimpleConnectionHandle;
+import org.springframework.jdbc.datasource.SimpleDriverDataSource;
+import org.springframework.jdbc.datasource.SingleConnectionDataSource;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import javax.sql.DataSource;
+import java.sql.Driver;
 import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -18,6 +22,7 @@ import static org.junit.Assert.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "/applicationContext.xml")
+@DirtiesContext
 public class UserDaoTest {
 
     @Autowired
@@ -30,6 +35,12 @@ public class UserDaoTest {
 
     @Before
     public void setUp() {
+        DataSource dataSource = new SingleConnectionDataSource(
+            "jdbc:mysql://localhost/test_toby_spring?serverTimezone=UTC", "toby_spring", "toby_spring", true
+        );
+
+        this.userDao.setDataSource(dataSource);
+
         this.user1 = new User("LEEGICHEOL", "기철", "12345");
         this.user2 = new User("LLL", "기찰", "09876");
         this.user3 = new User("GCLEE", "기촐", "54321");
