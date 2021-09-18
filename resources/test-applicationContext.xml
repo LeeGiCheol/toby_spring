@@ -12,6 +12,11 @@
 
     <bean id="userDao" class="me.gicheol.dao.UserDao">
         <property name="dataSource" ref="dataSource"/>
+        <property name="jdbcContext" ref="jdbcContext"/>
+    </bean>
+
+    <bean id="jdbcContext" class="me.gicheol.dao.JdbcContext">
+        <property name="dataSource" ref="dataSource"/>
     </bean>
 
 </beans>
