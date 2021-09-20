@@ -140,6 +140,7 @@ public class UserDaoTest {
         userDao.deleteAll();
 
         userDao.add(user1);
+        userDao.add(user2);
 
         user1.setName("GGG");
         user1.setPassword("GICHEOL");
@@ -150,6 +151,9 @@ public class UserDaoTest {
 
         User user1Update = userDao.get(user1.getId());
         checkSameUser(user1, user1Update);
+
+        User user2Same = userDao.get(user2.getId());
+        checkSameUser(user2, user2Same);
     }
 
     private void checkSameUser(User user1, User user2) {
