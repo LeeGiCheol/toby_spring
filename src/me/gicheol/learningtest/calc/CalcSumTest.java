@@ -1,4 +1,4 @@
-package me.gicheol.calc;
+package me.gicheol.learningtest.calc;
 
 import org.junit.Before;
 import org.junit.Test;

@@ -1,4 +1,4 @@
-package me.gicheol.calc;
+package me.gicheol.learningtest.calc;
 
 public interface LineCallback<T> {
 

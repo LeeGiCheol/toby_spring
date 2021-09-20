@@ -1,4 +1,4 @@
-package me.gicheol.calc;
+package me.gicheol.learningtest.calc;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
