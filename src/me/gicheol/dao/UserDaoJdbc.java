@@ -1,5 +1,6 @@
 package me.gicheol.dao;
 
+import me.gicheol.domain.Level;
 import me.gicheol.domain.User;
 import me.gicheol.exception.DuplicateUserIdException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -25,6 +26,9 @@ public class UserDaoJdbc implements UserDao {
             user.setId(resultSet.getString("id"));
             user.setName(resultSet.getString("name"));
             user.setPassword(resultSet.getString("password"));
+            user.setLevel(Level.valueOf(resultSet.getInt("level")));
+            user.setLogin(resultSet.getInt("login"));
+            user.setRecommand(resultSet.getInt("recommand"));
             return user;
         }
     };
@@ -32,8 +36,8 @@ public class UserDaoJdbc implements UserDao {
 
     public void add(final User user) throws DuplicateUserIdException {
         try {
-            this.jdbcTemplate.update("INSERT INTO users(id, name, password) VALUES (?, ?, ?)",
-                    user.getId(), user.getName(), user.getPassword());
+            this.jdbcTemplate.update("INSERT INTO users(id, name, password, level, login, recommand) VALUES (?, ?, ?, ?, ?, ?)",
+                    user.getId(), user.getName(), user.getPassword(), user.getLevel().intValue(), user.getLogin(), user.getRecommand());
         } catch (DuplicateUserIdException e) {
             throw new DuplicateUserIdException(e);
         }
