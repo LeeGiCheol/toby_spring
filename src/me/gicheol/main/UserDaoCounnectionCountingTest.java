@@ -2,8 +2,7 @@ package me.gicheol.main;
 
 import me.gicheol.dao.CountingConnectionMaker;
 import me.gicheol.dao.CountingDaoFactory;
-import me.gicheol.dao.DaoFactory;
-import me.gicheol.dao.UserDao;
+import me.gicheol.dao.UserDaoJdbc;
 import me.gicheol.domain.User;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -14,7 +13,7 @@ public class UserDaoCounnectionCountingTest {
 
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
         ApplicationContext context = new AnnotationConfigApplicationContext(CountingDaoFactory.class);
-        UserDao userDao = context.getBean("userDao", UserDao.class);
+        UserDaoJdbc userDao = context.getBean("userDao", UserDaoJdbc.class);
 
         User user = new User();
         user.setId("LEEGICHEOL");
