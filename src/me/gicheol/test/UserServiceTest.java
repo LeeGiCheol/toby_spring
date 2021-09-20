@@ -3,6 +3,7 @@ package me.gicheol.test;
 import me.gicheol.dao.UserDao;
 import me.gicheol.domain.Level;
 import me.gicheol.domain.User;
+import me.gicheol.service.MockMailSender;
 import me.gicheol.service.UserService;
 import org.junit.Before;
 import org.junit.Test;
@@ -52,11 +53,11 @@ public class UserServiceTest {
     @Before
     public void setUp() {
         users = Arrays.asList(
-                new User("CHEEOLEE", "기철", "12345", Level.BASIC, MIN_LOGCOUNT_FOR_SILVER - 1, 0),
-                new User("GCLEE", "기찰", "09876", Level.BASIC, MIN_LOGCOUNT_FOR_SILVER, 0),
-                new User("GGG", "기촐", "54321", Level.SILVER, 60, MIN_RECCOMEND_FOR_GOLD - 1),
-                new User("LEEGICHEOL", "기츨", "qwerty", Level.SILVER, 60, MIN_RECCOMEND_FOR_GOLD),
-                new User("LLL", "기챌", "asdfgh", Level.GOLD, 100, Integer.MAX_VALUE)
+                new User("CHEEOLEE", "기철", "12345", "leegicheolgc@gmail.com", Level.BASIC, MIN_LOGCOUNT_FOR_SILVER - 1, 0),
+                new User("GCLEE", "기찰", "09876", "leegicheol@gmail.com", Level.BASIC, MIN_LOGCOUNT_FOR_SILVER, 0),
+                new User("GGG", "기촐", "54321", "lee@gmail.com", Level.SILVER, 60, MIN_RECCOMEND_FOR_GOLD - 1),
+                new User("LEEGICHEOL", "기츨", "qwerty", "gclee@gmail.com", Level.SILVER, 60, MIN_RECCOMEND_FOR_GOLD),
+                new User("LLL", "기챌", "asdfgh", "ggggg@gmail.com", Level.GOLD, 100, Integer.MAX_VALUE)
         );
     }
 
@@ -69,6 +70,9 @@ public class UserServiceTest {
             userDao.add(user);
         }
 
+        MockMailSender mockMailSender = new MockMailSender();
+        userService.setMailSender(mockMailSender);
+
         userService.upgradeLevels();
 
         checkLevelUpgraded(users.get(0), false);
@@ -76,6 +80,11 @@ public class UserServiceTest {
         checkLevelUpgraded(users.get(2), false);
         checkLevelUpgraded(users.get(3), true);
         checkLevelUpgraded(users.get(4), false);
+
+        List<String> requests = mockMailSender.getRequests();
+        assertThat(requests.size(), is(2));
+        assertThat(requests.get(0), is(users.get(1).getEmail()));
+        assertThat(requests.get(1), is(users.get(3).getEmail()));
     }
 
     @Test
