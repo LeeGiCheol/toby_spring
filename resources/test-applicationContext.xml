@@ -21,9 +21,11 @@
     <bean id="mailSender" class="me.gicheol.service.DummyMailSender"/>
 
 
-    <bean id="userService" class="me.gicheol.service.UserServiceTx">
+    <bean id="userService" class="me.gicheol.service.TxProxyFactoryBean">
+        <property name="target" ref="userServiceImpl"/>
         <property name="transactionManager" ref="transactionManager"/>
-        <property name="userService" ref="userServiceImpl"/>
+        <property name="pattern" value="upgradeLevels"/>
+        <property name="serviceInterface" value="me.gicheol.service.UserService"/>
     </bean>
 
     <bean id="userServiceImpl" class="me.gicheol.service.UserServiceImpl">
