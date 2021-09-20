@@ -1,4 +1,4 @@
-package me.gicheol.main;
+package me.gicheol.test;
 
 import me.gicheol.dao.UserDao;
 import me.gicheol.domain.Level;
