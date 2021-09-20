@@ -21,9 +21,13 @@
     <bean id="mailSender" class="me.gicheol.service.DummyMailSender"/>
 
 
-    <bean id="userService" class="me.gicheol.service.UserService">
-        <property name="userDao" ref="userDao"/>
+    <bean id="userService" class="me.gicheol.service.UserServiceTx">
         <property name="transactionManager" ref="transactionManager"/>
+        <property name="userService" ref="userServiceImpl"/>
+    </bean>
+
+    <bean id="userServiceImpl" class="me.gicheol.service.UserServiceImpl">
+        <property name="userDao" ref="userDao"/>
         <property name="mailSender" ref="mailSender"/>
     </bean>
 
