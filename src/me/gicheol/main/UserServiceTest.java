@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -19,7 +20,7 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "/test-applicationContext.xml")
+@ContextConfiguration(locations= "/test-applicationContext.xml")
 public class UserServiceTest {
 
     @Autowired
@@ -27,6 +28,7 @@ public class UserServiceTest {
 
     @Autowired
     UserDao userDao;
+
 
     List<User> users;
 
