@@ -4,10 +4,7 @@ import me.gicheol.dao.MockUserDao;
 import me.gicheol.dao.UserDao;
 import me.gicheol.domain.Level;
 import me.gicheol.domain.User;
-import me.gicheol.service.MockMailSender;
-import me.gicheol.service.UserService;
-import me.gicheol.service.UserServiceImpl;
-import me.gicheol.service.UserServiceTx;
+import me.gicheol.service.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,6 +16,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.List;
 
@@ -152,15 +150,20 @@ public class UserServiceTest {
         testUserService.setUserDao(this.userDao);
         testUserService.setMailSender(this.mailSender);
 
-        UserServiceTx txUserService = new UserServiceTx();
-        txUserService.setTransactionManager(this.transactionManager);
-        txUserService.setUserService(testUserService);
+        TransactionHandler txHandler = new TransactionHandler();
+        txHandler.setTarget(testUserService);
+        txHandler.setTransactionManager(this.transactionManager);
+        txHandler.setPattern("upgradeLevels");
 
         userDao.deleteAll();
 
         for (User user : users) {
             userDao.add(user);
         }
+
+        UserService txUserService = (UserService) Proxy.newProxyInstance(
+                getClass().getClassLoader(), new Class[] { UserService.class }, txHandler
+        );
 
         try {
             txUserService.upgradeLevels();
