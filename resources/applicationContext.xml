@@ -10,13 +10,17 @@
         <property name="password" value="toby_spring"/>
     </bean>
 
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
     <bean id="userDao" class="me.gicheol.dao.UserDaoJdbc">
         <property name="dataSource" ref="dataSource"/>
     </bean>
 
     <bean id="userService" class="me.gicheol.service.UserService">
         <property name="userDao" ref="userDao"/>
-        <property name="dataSource" ref="dataSource"/>
+        <property name="transactionManager" ref="transactionManager"/>
     </bean>
 
 </beans>

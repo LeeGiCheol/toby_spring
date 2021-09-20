@@ -18,9 +18,13 @@
         <property name="dataSource" ref="dataSource"/>
     </bean>
 
+    <bean id="mailSender" class="me.gicheol.service.DummyMailSender"/>
+
+
     <bean id="userService" class="me.gicheol.service.UserService">
         <property name="userDao" ref="userDao"/>
         <property name="transactionManager" ref="transactionManager"/>
+        <property name="mailSender" ref="mailSender"/>
     </bean>
 
 </beans>
