@@ -8,7 +8,7 @@ public class User {
 
     Level level;
     int login;
-    int recommand;
+    int recommend;
 
     public String getId() {
         return id;
@@ -50,23 +50,23 @@ public class User {
         this.login = login;
     }
 
-    public int getRecommand() {
-        return recommand;
+    public int getRecommend() {
+        return recommend;
     }
 
-    public void setRecommand(int recommand) {
-        this.recommand = recommand;
+    public void setRecommend(int recommend) {
+        this.recommend = recommend;
     }
 
 
     public User() {}
 
-    public User(String id, String name, String password, Level level, int login, int recommand) {
+    public User(String id, String name, String password, Level level, int login, int recommend) {
         this.id = id;
         this.name = name;
         this.password = password;
         this.level = level;
         this.login = login;
-        this.recommand = recommand;
+        this.recommend = recommend;
     }
 }

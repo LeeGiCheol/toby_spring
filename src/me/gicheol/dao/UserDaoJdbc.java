@@ -28,37 +28,45 @@ public class UserDaoJdbc implements UserDao {
             user.setPassword(resultSet.getString("password"));
             user.setLevel(Level.valueOf(resultSet.getInt("level")));
             user.setLogin(resultSet.getInt("login"));
-            user.setRecommand(resultSet.getInt("recommand"));
+            user.setRecommend(resultSet.getInt("recommend"));
             return user;
         }
     };
 
-
+    @Override
     public void add(final User user) throws DuplicateUserIdException {
         try {
-            this.jdbcTemplate.update("INSERT INTO users(id, name, password, level, login, recommand) VALUES (?, ?, ?, ?, ?, ?)",
-                    user.getId(), user.getName(), user.getPassword(), user.getLevel().intValue(), user.getLogin(), user.getRecommand());
+            this.jdbcTemplate.update("INSERT INTO users(id, name, password, level, login, recommend) VALUES (?, ?, ?, ?, ?, ?)",
+                    user.getId(), user.getName(), user.getPassword(), user.getLevel().intValue(), user.getLogin(), user.getRecommend());
         } catch (DuplicateUserIdException e) {
             throw new DuplicateUserIdException(e);
         }
     }
 
-
+    @Override
     public User get(String id) {
         return this.jdbcTemplate.queryForObject("SELECT * FROM users WHERE id = ?", new Object[] {id}, this.userMapper);
     }
 
+    @Override
     public List<User> getAll() {
         return this.jdbcTemplate.query("SELECT * FROM users ORDER BY id", this.userMapper);
     }
 
+    @Override
     public void deleteAll() {
         this.jdbcTemplate.update("DELETE FROM users");
     }
 
-
+    @Override
     public int getCount() {
         return this.jdbcTemplate.queryForInt("SELECT COUNT(*) FROM users");
     }
 
+    @Override
+    public void update(User user) {
+        this.jdbcTemplate.update("UPDATE users SET name = ?, password = ?, level = ?, login = ?, " +
+                                     "recommend = ? WHERE id = ?",
+                                    user.getName(), user.getPassword(), user.getLevel().intValue(), user.getLogin(), user.getRecommend(), user.getId());
+    }
 }
