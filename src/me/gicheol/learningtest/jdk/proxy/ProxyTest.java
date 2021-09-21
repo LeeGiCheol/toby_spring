@@ -3,6 +3,8 @@ package me.gicheol.learningtest.jdk.proxy;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.junit.Test;
+import org.springframework.aop.ClassFilter;
+import org.springframework.aop.Pointcut;
 import org.springframework.aop.framework.ProxyFactoryBean;
 import org.springframework.aop.support.DefaultPointcutAdvisor;
 import org.springframework.aop.support.NameMatchMethodPointcut;
@@ -77,6 +79,49 @@ public class ProxyTest {
         assertThat(proxiedHello.sayHello("cheeolee"), is("HELLO CHEEOLEE"));
         assertThat(proxiedHello.sayHi("cheeolee"), is("HI CHEEOLEE"));
         assertThat(proxiedHello.sayThankYou("cheeolee"), is("Thank You cheeolee"));
+    }
+
+    @Test
+    public void classNamePointcutAdvisor() {
+        NameMatchMethodPointcut classMethodPointcut = new NameMatchMethodPointcut() {
+            @Override
+            public ClassFilter getClassFilter() {
+                return new ClassFilter() {
+                    @Override
+                    public boolean matches(Class<?> clazz) {
+                        return clazz.getSimpleName().startsWith("HelloT");
+                    }
+                };
+            }
+        };
+
+        classMethodPointcut.setMappedName("sayH*");
+
+        checkAdviced(new HelloTarget(), classMethodPointcut, true);
+
+        class HelloWorld extends HelloTarget {}
+        checkAdviced(new HelloWorld(), classMethodPointcut, false);
+
+        class HelloTargetTrue extends HelloTarget {}
+        checkAdviced(new HelloTargetTrue(), classMethodPointcut, true);
+    }
+
+    private void checkAdviced(Object target, Pointcut pointcut, boolean adviced) {
+        ProxyFactoryBean pfBean = new ProxyFactoryBean();
+        pfBean.setTarget(target);
+        pfBean.addAdvisor(new DefaultPointcutAdvisor(pointcut, new UppercaseAdvice()));
+
+        Hello proxiedHello = (Hello) pfBean.getObject();
+
+        if (adviced) {
+            assertThat(proxiedHello.sayHello("cheeolee"), is("HELLO CHEEOLEE"));
+            assertThat(proxiedHello.sayHi("cheeolee"), is("HI CHEEOLEE"));
+            assertThat(proxiedHello.sayThankYou("cheeolee"), is("Thank You cheeolee"));
+        } else {
+            assertThat(proxiedHello.sayHello("cheeolee"), is("Hello cheeolee"));
+            assertThat(proxiedHello.sayHi("cheeolee"), is("Hi cheeolee"));
+            assertThat(proxiedHello.sayThankYou("cheeolee"), is("Thank You cheeolee"));
+        }
     }
 
 
