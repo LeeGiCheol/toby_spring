@@ -1,6 +1,9 @@
 package me.gicheol.learningtest.jdk.proxy;
 
+import org.aopalliance.intercept.MethodInterceptor;
+import org.aopalliance.intercept.MethodInvocation;
 import org.junit.Test;
+import org.springframework.aop.framework.ProxyFactoryBean;
 
 import java.lang.reflect.Proxy;
 
@@ -33,5 +36,29 @@ public class ProxyTest {
         assertThat(proxiedHello.sayHi("cheeolee"), is("HI CHEEOLEE"));
         assertThat(proxiedHello.sayThankYou("cheeolee"), is("THANK YOU CHEEOLEE"));
     }
+
+    @Test
+    public void proxyFactoryBean() {
+        ProxyFactoryBean pfBean = new ProxyFactoryBean();
+        pfBean.setTarget(new HelloTarget());
+        pfBean.addAdvice(new UppercaseAdvice());
+
+        Hello proxiedHello = (Hello) pfBean.getObject();
+
+        assertThat(proxiedHello.sayHello("cheeolee"), is("HELLO CHEEOLEE"));
+        assertThat(proxiedHello.sayHi("cheeolee"), is("HI CHEEOLEE"));
+        assertThat(proxiedHello.sayThankYou("cheeolee"), is("THANK YOU CHEEOLEE"));
+    }
+
+    static class UppercaseAdvice implements MethodInterceptor {
+
+        @Override
+        public Object invoke(MethodInvocation methodInvocation) throws Throwable {
+            String ret = (String) methodInvocation.proceed();
+            return ret.toUpperCase();
+        }
+
+    }
+
 
 }
