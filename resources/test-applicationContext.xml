@@ -45,7 +45,7 @@
         <property name="mailSender" ref="mailSender"/>
     </bean>
 
-    <bean id="testUserService" class="me.gicheol.test.UserServiceTest$TestUserServiceImpl"
+    <bean id="testUserService" class="me.gicheol.test.UserServiceTest$TestUserService"
           parent="userService"/>
 
 </beans>
