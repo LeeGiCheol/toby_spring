@@ -4,21 +4,29 @@ import me.gicheol.dao.MockUserDao;
 import me.gicheol.dao.UserDao;
 import me.gicheol.domain.Level;
 import me.gicheol.domain.User;
-import me.gicheol.service.*;
+import me.gicheol.service.MockMailSender;
+import me.gicheol.service.UserService;
+import me.gicheol.service.UserServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.springframework.aop.framework.ProxyFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.dao.TransientDataAccessResourceException;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.NotTransactional;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import java.lang.reflect.Proxy;
 import java.util.Arrays;
@@ -34,6 +42,8 @@ import static org.mockito.Mockito.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations= "/test-applicationContext.xml")
+@Transactional
+@TransactionConfiguration(defaultRollback = false)
 public class UserServiceTest {
 
     @Autowired
@@ -133,6 +143,7 @@ public class UserServiceTest {
     }
 
     @Test
+    @Rollback
     public void add() {
         userDao.deleteAll();
 
@@ -153,6 +164,7 @@ public class UserServiceTest {
 
     @Test
     @DirtiesContext
+    @Transactional(propagation = Propagation.NEVER)
     public void upgradeAllOrNothing() {
         userDao.deleteAll();
 
@@ -175,8 +187,54 @@ public class UserServiceTest {
     }
 
     @Test(expected = TransientDataAccessResourceException.class)
+    @Transactional(propagation = Propagation.NEVER)
     public void readOnlyTransactionAttribute() {
         testUserService.getAll();
+    }
+
+    @Test
+    @Rollback
+    @Transactional(propagation = Propagation.NEVER)
+    public void transactionSync() {
+        userService.deleteAll();
+        userService.add(users.get(0));
+        userService.add(users.get(1));
+    }
+
+    @Test
+    public void transactionSyncCommit() {
+        userDao.deleteAll();
+        assertThat(userDao.getCount(), is(0));
+
+        DefaultTransactionDefinition txDefinition = new DefaultTransactionDefinition();
+        TransactionStatus status = transactionManager.getTransaction(txDefinition);
+
+        try {
+            userService.add(users.get(0));
+            userService.add(users.get(1));
+            assertThat(userDao.getCount(), is(2));
+        } finally {
+            transactionManager.commit(status);
+            assertThat(userDao.getCount(), is(2));
+        }
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.NEVER)
+    public void transactionSyncRollback() {
+        userService.deleteAll();
+
+        DefaultTransactionDefinition txDefinition = new DefaultTransactionDefinition();
+        TransactionStatus status = transactionManager.getTransaction(txDefinition);
+
+        try {
+            userService.add(users.get(0));
+            userService.add(users.get(1));
+            assertThat(userDao.getCount(), is(2));
+        } finally {
+            transactionManager.rollback(status);
+            assertThat(userDao.getCount(), is(0));
+        }
     }
 
     private void checkLevelUpgraded(User user, boolean upgraded) {
