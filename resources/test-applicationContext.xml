@@ -20,6 +20,12 @@
 
     <bean id="userDao" class="me.gicheol.dao.UserDaoJdbc">
         <property name="dataSource" ref="dataSource"/>
+        <property name="sqlAdd" value="INSERT INTO users(id, name, password, email, level, login, recommend) VALUES (?, ?, ?, ?, ?, ?, ?)"/>
+        <property name="sqlGet" value="SELECT * FROM users WHERE id = ?"/>
+        <property name="sqlGetAll" value="SELECT * FROM users ORDER BY id"/>
+        <property name="sqlDelete" value="DELETE FROM users"/>
+        <property name="sqlGetCount" value="SELECT COUNT(*) FROM users"/>
+        <property name="sqlUpdate" value="UPDATE users SET name = ?, password = ?, email = ?, level = ?, login = ?, recommend = ? WHERE id = ?"/>
     </bean>
 
     <bean id="mailSender" class="me.gicheol.service.DummyMailSender"/>
