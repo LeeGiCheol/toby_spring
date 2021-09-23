@@ -2,6 +2,7 @@ package me.gicheol.dao;
 
 import me.gicheol.domain.Level;
 import me.gicheol.domain.User;
+import me.gicheol.sql.SqlService;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
@@ -9,20 +10,19 @@ import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Map;
 
 public class UserDaoJdbc implements UserDao {
 
     private JdbcTemplate jdbcTemplate;
 
-    private Map<String, String> sqlMap;
+    private SqlService sqlService;
 
     public void setDataSource(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
-    public void setSqlMap(Map<String, String> sqlMap) {
-        this.sqlMap = sqlMap;
+    public void setSqlService(SqlService sqlService) {
+        this.sqlService = sqlService;
     }
 
 
@@ -43,34 +43,34 @@ public class UserDaoJdbc implements UserDao {
 
     @Override
     public void add(final User user) {
-        this.jdbcTemplate.update(this.sqlMap.get("add"),
+        this.jdbcTemplate.update(this.sqlService.getSql("add"),
                 user.getId(), user.getName(), user.getPassword(), user.getEmail(),
                 user.getLevel().intValue(), user.getLogin(), user.getRecommend());
     }
 
     @Override
     public User get(String id) {
-        return this.jdbcTemplate.queryForObject(this.sqlMap.get("get"), new Object[] {id}, this.userMapper);
+        return this.jdbcTemplate.queryForObject(this.sqlService.getSql("get"), new Object[] {id}, this.userMapper);
     }
 
     @Override
     public List<User> getAll() {
-        return this.jdbcTemplate.query(this.sqlMap.get("getAll"), this.userMapper);
+        return this.jdbcTemplate.query(this.sqlService.getSql("getAll"), this.userMapper);
     }
 
     @Override
     public void deleteAll() {
-        this.jdbcTemplate.update(this.sqlMap.get("delete"));
+        this.jdbcTemplate.update(this.sqlService.getSql("delete"));
     }
 
     @Override
     public int getCount() {
-        return this.jdbcTemplate.queryForInt(this.sqlMap.get("getCount"));
+        return this.jdbcTemplate.queryForInt(this.sqlService.getSql("getCount"));
     }
 
     @Override
     public void update(User user) {
-        this.jdbcTemplate.update(this.sqlMap.get("update"),
+        this.jdbcTemplate.update(this.sqlService.getSql("update"),
                             user.getName(), user.getPassword(), user.getEmail(),
                             user.getLevel().intValue(), user.getLogin(), user.getRecommend(), user.getId());
     }

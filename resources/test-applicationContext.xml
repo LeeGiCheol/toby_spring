@@ -20,6 +20,10 @@
 
     <bean id="userDao" class="me.gicheol.dao.UserDaoJdbc">
         <property name="dataSource" ref="dataSource"/>
+        <property name="sqlService" ref="sqlService"/>
+    </bean>
+
+    <bean id="sqlService" class="me.gicheol.sql.SimpleSqlService">
         <property name="sqlMap">
             <map>
                 <entry key="add" value="INSERT INTO users(id, name, password, email, level, login, recommend) VALUES (?, ?, ?, ?, ?, ?, ?)"/>
