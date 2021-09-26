@@ -23,17 +23,7 @@
         <property name="sqlService" ref="sqlService"/>
     </bean>
 
-    <bean id="sqlService" class="me.gicheol.sql.SimpleSqlService">
-        <property name="sqlMap">
-            <map>
-                <entry key="add" value="INSERT INTO users(id, name, password, email, level, login, recommend) VALUES (?, ?, ?, ?, ?, ?, ?)"/>
-                <entry key="get" value="SELECT * FROM users WHERE id = ?"/>
-                <entry key="getAll" value="SELECT * FROM users ORDER BY id"/>
-                <entry key="delete" value="DELETE FROM users"/>
-                <entry key="getCount" value="SELECT COUNT(*) FROM users"/>
-                <entry key="update" value="UPDATE users SET name = ?, password = ?, email = ?, level = ?, login = ?, recommend = ? WHERE id = ?"/>
-            </map>
-        </property>
+    <bean id="sqlService" class="me.gicheol.sql.XmlSqlService">
     </bean>
 
     <bean id="mailSender" class="me.gicheol.service.DummyMailSender"/>
