@@ -1,10 +1,11 @@
 package me.gicheol.sql;
 
 import me.gicheol.dao.UserDao;
-import me.gicheol.exception.SqlNotFoundException;
 import me.gicheol.exception.SqlRetrievalFailureException;
 import me.gicheol.sql.jaxb.SqlType;
 import me.gicheol.sql.jaxb.Sqlmap;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.oxm.Unmarshaller;
 
 import javax.annotation.PostConstruct;
@@ -18,30 +19,26 @@ public class OxmSqlService implements SqlService {
 
     private SqlRegistry sqlRegistry = new HashMapSqlRegistry();
 
-    public void setSqlRegistry(SqlRegistry sqlRegistry) {
-        this.sqlRegistry = sqlRegistry;
-    }
+    private final BaseSqlService baseSqlService = new BaseSqlService();
 
     public void setUnmarshaller(Unmarshaller unmarshaller) {
         this.oxmSqlReader.setUnmarshaller(unmarshaller);
     }
 
-    public void setSqlmapFile(String sqlmapFile) {
-        this.oxmSqlReader.setSqlmapFile(sqlmapFile);
+    public void setSqlmap(Resource sqlmap) {
+        this.oxmSqlReader.setSqlmap(sqlmap);
     }
 
     @PostConstruct
     public void loadSql() {
-        this.oxmSqlReader.read(this.sqlRegistry);
+        this.baseSqlService.setSqlReader(this.oxmSqlReader);
+        this.baseSqlService.setSqlRegistry(this.sqlRegistry);
+        this.baseSqlService.loadSql();
     }
 
     @Override
     public String getSql(String key) throws SqlRetrievalFailureException {
-        try {
-            return this.sqlRegistry.findSql(key);
-        } catch (SqlNotFoundException e) {
-            throw new SqlRetrievalFailureException(e);
-        }
+        return this.baseSqlService.getSql(key);
     }
 
 
@@ -49,21 +46,20 @@ public class OxmSqlService implements SqlService {
 
         private Unmarshaller unmarshaller;
 
-        private final static String DEFAULT_SQLMAP_FILE = "sqlmap.xml";
-        private String sqlmapFile = DEFAULT_SQLMAP_FILE;
+        private Resource sqlmap = new ClassPathResource("sqlmap.xml", UserDao.class);
 
         public void setUnmarshaller(Unmarshaller unmarshaller) {
             this.unmarshaller = unmarshaller;
         }
 
-        public void setSqlmapFile(String sqlmapFile) {
-            this.sqlmapFile = sqlmapFile;
+        public void setSqlmap(Resource sqlmap) {
+            this.sqlmap = sqlmap;
         }
 
         @Override
         public void read(SqlRegistry registry) {
             try {
-                Source source = new StreamSource(UserDao.class.getResourceAsStream(this.sqlmapFile));
+                Source source = new StreamSource(this.sqlmap.getInputStream());
                 Sqlmap sqlmap = (Sqlmap) this.unmarshaller.unmarshal(source);
 
                 for (SqlType sql : sqlmap.getSql()) {
