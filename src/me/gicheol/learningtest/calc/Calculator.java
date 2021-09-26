@@ -7,7 +7,7 @@ import java.io.IOException;
 public class Calculator {
 
     public Integer calcSum(String filePath) throws IOException {
-        LineCallback<Integer> sumCallback = new LineCallback<>() {
+        LineCallback<Integer> sumCallback = new LineCallback<Integer>() {
             @Override
             public Integer doSomethingWithLine(String line, Integer value) {
                 return value + Integer.parseInt(line);
@@ -19,7 +19,7 @@ public class Calculator {
 
 
     public Integer calcMultiply(String numFilePath) throws IOException {
-        LineCallback<Integer> multiplyCallback = new LineCallback<>() {
+        LineCallback<Integer> multiplyCallback = new LineCallback<Integer>() {
             @Override
             public Integer doSomethingWithLine(String line, Integer value) {
                 return value * Integer.parseInt(line);
@@ -30,7 +30,7 @@ public class Calculator {
     }
 
     public String concatenate(String filepath) throws IOException {
-        LineCallback<String> concatenateCallback = new LineCallback<>() {
+        LineCallback<String> concatenateCallback = new LineCallback<String>() {
             @Override
             public String doSomethingWithLine(String line, String value) {
                 return value + line;

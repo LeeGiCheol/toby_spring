@@ -26,7 +26,7 @@ public class UserDaoJdbc implements UserDao {
     }
 
 
-    private RowMapper<User> userMapper = new RowMapper<>() {
+    private RowMapper<User> userMapper = new RowMapper<User>() {
         @Override
         public User mapRow(ResultSet resultSet, int i) throws SQLException {
             User user = new User();
