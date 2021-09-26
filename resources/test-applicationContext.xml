@@ -24,14 +24,14 @@
         <property name="sqlService" ref="sqlService"/>
     </bean>
 
-    <bean id="sqlService" class="me.gicheol.sql.DefaultSqlService"/>
-
-    <bean id="sqlReader" class="me.gicheol.sql.JaxbXmlSqlReader">
-        <property name="sqlmapFile" value="sqlmap.xml"/>
+    <bean id="unmarshaller" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+        <property name="contextPath" value="me.gicheol.sql.jaxb"/>
     </bean>
 
-    <bean id="sqlRegistry" class="me.gicheol.sql.HashMapSqlRegistry">
+    <bean id="sqlService" class="me.gicheol.sql.OxmSqlService">
+        <property name="unmarshaller" ref="unmarshaller"/>
     </bean>
+
 
     <bean id="mailSender" class="me.gicheol.service.DummyMailSender"/>
 
