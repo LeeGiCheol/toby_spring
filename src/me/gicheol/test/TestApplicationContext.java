@@ -5,32 +5,34 @@ import me.gicheol.dao.UserDao;
 import me.gicheol.dao.UserDaoJdbc;
 import me.gicheol.service.DummyMailSender;
 import me.gicheol.service.UserService;
+import me.gicheol.test.UserServiceTest.TestUserService;
 import me.gicheol.service.UserServiceImpl;
 import me.gicheol.sql.EmbeddedDbSqlRegistry;
 import me.gicheol.sql.OxmSqlService;
 import me.gicheol.sql.SqlRegistry;
 import me.gicheol.sql.SqlService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.ImportResource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.mail.MailSender;
 import org.springframework.oxm.Unmarshaller;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import javax.annotation.Resource;
 import javax.sql.DataSource;
 
+import static org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType.HSQL;
+
 @Configuration
-@ImportResource("classpath:/test-applicationContext.xml")
+@EnableTransactionManagement
 public class TestApplicationContext {
 
-    @Autowired
-    private SqlService sqlService;
-
+    /**
+     * DB연결과 트랜잭션
+     */
     @Bean
     public DataSource dataSource() {
         SimpleDriverDataSource dataSource = new SimpleDriverDataSource();
@@ -50,11 +52,17 @@ public class TestApplicationContext {
         return transactionManager;
     }
 
+    /**
+     * 애플리케이션 로직 & 테스트용 빈
+     */
+//    @Autowired
+//    SqlService sqlService;
+
     @Bean
     public UserDao userDao() {
         UserDaoJdbc userDao = new UserDaoJdbc();
         userDao.setDataSource(dataSource());
-        userDao.setSqlService(this.sqlService);
+        userDao.setSqlService(sqlService());
 
         return userDao;
     }
@@ -70,7 +78,7 @@ public class TestApplicationContext {
 
     @Bean
     public UserService testUserService() {
-        UserServiceTest.TestUserService testUserService = new UserServiceTest.TestUserService();
+        TestUserService testUserService = new TestUserService();
         testUserService.setUserDao(userDao());
         testUserService.setMailSender(mailSender());
 
@@ -82,6 +90,9 @@ public class TestApplicationContext {
         return new DummyMailSender();
     }
 
+    /**
+     * SQL서비스
+     */
     @Bean
     public SqlService sqlService() {
         OxmSqlService sqlService = new OxmSqlService();
@@ -91,13 +102,10 @@ public class TestApplicationContext {
         return sqlService;
     }
 
-    @Resource
-    DataSource embeddedDatabase;
-
     @Bean
     public SqlRegistry sqlRegistry() {
         EmbeddedDbSqlRegistry sqlRegistry = new EmbeddedDbSqlRegistry();
-        sqlRegistry.setDataSource(this.embeddedDatabase);
+        sqlRegistry.setDataSource(embeddedDatabase());
 
         return sqlRegistry;
     }
@@ -108,6 +116,15 @@ public class TestApplicationContext {
         marshaller.setContextPath("me.gicheol.sql.jaxb");
 
         return marshaller;
+    }
+
+    @Bean
+    public DataSource embeddedDatabase() {
+        return new EmbeddedDatabaseBuilder()
+                .setName("embeddedDatabase")
+                .setType(HSQL)
+                .addScript("classpath:me/gicheol/sql/sql/sqlRegistrySchema.sql")
+            .build();
     }
 
 }

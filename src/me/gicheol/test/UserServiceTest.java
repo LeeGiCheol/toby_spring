@@ -42,8 +42,6 @@ import static org.mockito.Mockito.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = TestApplicationContext.class)
-@Transactional
-@TransactionConfiguration(defaultRollback = false)
 public class UserServiceTest {
 
     @Autowired
@@ -163,8 +161,6 @@ public class UserServiceTest {
     }
 
     @Test
-    @DirtiesContext
-    @Transactional(propagation = Propagation.NEVER)
     public void upgradeAllOrNothing() {
         userDao.deleteAll();
 
@@ -181,60 +177,17 @@ public class UserServiceTest {
         checkLevelUpgraded(users.get(1), false);
     }
 
-    @Test
-    public void advisorAutoProxyCreator() {
-        assertThat(testUserService, is(Proxy.class));
-    }
-
     @Test(expected = TransientDataAccessResourceException.class)
-    @Transactional(propagation = Propagation.NEVER)
     public void readOnlyTransactionAttribute() {
         testUserService.getAll();
     }
 
     @Test
-    @Rollback
     @Transactional(propagation = Propagation.NEVER)
     public void transactionSync() {
         userService.deleteAll();
         userService.add(users.get(0));
         userService.add(users.get(1));
-    }
-
-    @Test
-    public void transactionSyncCommit() {
-        userDao.deleteAll();
-        assertThat(userDao.getCount(), is(0));
-
-        DefaultTransactionDefinition txDefinition = new DefaultTransactionDefinition();
-        TransactionStatus status = transactionManager.getTransaction(txDefinition);
-
-        try {
-            userService.add(users.get(0));
-            userService.add(users.get(1));
-            assertThat(userDao.getCount(), is(2));
-        } finally {
-            transactionManager.commit(status);
-            assertThat(userDao.getCount(), is(2));
-        }
-    }
-
-    @Test
-    @Transactional(propagation = Propagation.NEVER)
-    public void transactionSyncRollback() {
-        userService.deleteAll();
-
-        DefaultTransactionDefinition txDefinition = new DefaultTransactionDefinition();
-        TransactionStatus status = transactionManager.getTransaction(txDefinition);
-
-        try {
-            userService.add(users.get(0));
-            userService.add(users.get(1));
-            assertThat(userDao.getCount(), is(2));
-        } finally {
-            transactionManager.rollback(status);
-            assertThat(userDao.getCount(), is(0));
-        }
     }
 
     private void checkLevelUpgraded(User user, boolean upgraded) {
