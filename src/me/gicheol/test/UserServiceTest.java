@@ -41,7 +41,7 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations= "/test-applicationContext.xml")
+@ContextConfiguration(classes = TestApplicationContext.class)
 @Transactional
 @TransactionConfiguration(defaultRollback = false)
 public class UserServiceTest {
