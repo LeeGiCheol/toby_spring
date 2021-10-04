@@ -30,8 +30,10 @@
 
     <bean id="sqlService" class="me.gicheol.sql.OxmSqlService">
         <property name="unmarshaller" ref="unmarshaller"/>
+        <property name="sqlRegistry" ref="sqlRegistry"/>
     </bean>
 
+    <bean id="sqlRegistry" class="me.gicheol.sql.ConcurrentHashMapSqlRegistry"/>
 
     <bean id="mailSender" class="me.gicheol.service.DummyMailSender"/>
 

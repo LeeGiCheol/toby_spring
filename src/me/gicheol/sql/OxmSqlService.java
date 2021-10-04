@@ -29,6 +29,10 @@ public class OxmSqlService implements SqlService {
         this.oxmSqlReader.setSqlmap(sqlmap);
     }
 
+    public void setSqlRegistry(SqlRegistry sqlRegistry) {
+        this.sqlRegistry = sqlRegistry;
+    }
+
     @PostConstruct
     public void loadSql() {
         this.baseSqlService.setSqlReader(this.oxmSqlReader);
