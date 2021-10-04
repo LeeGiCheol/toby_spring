@@ -48,8 +48,6 @@
 
     <tx:annotation-driven />
 
-    <context:annotation-config/>
-
 
     <bean id="userService" class="me.gicheol.service.UserServiceImpl">
         <property name="userDao" ref="userDao"/>
