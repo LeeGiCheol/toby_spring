@@ -1,8 +1,7 @@
-package me.gicheol.learningtest.jdk.concurrent;
+package me.gicheol.learningtest.jdk.updatable;
 
 import me.gicheol.exception.SqlNotFoundException;
 import me.gicheol.exception.SqlUpdateFailureException;
-import me.gicheol.sql.ConcurrentHashMapSqlRegistry;
 import me.gicheol.sql.UpdatableSqlRegistry;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,28 +12,26 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class ConcurrentHashMapSqlRegistryTest {
+public abstract class AbstractUpdatableSqlRegistryTest {
 
-    UpdatableSqlRegistry sqlRegistry;
+    public UpdatableSqlRegistry sqlRegistry;
 
     @Before
     public void setUp() {
-        sqlRegistry = new ConcurrentHashMapSqlRegistry();
+        sqlRegistry = createUpdatableSqlRegistry();
         sqlRegistry.registerSql("KEY1", "SQL1");
         sqlRegistry.registerSql("KEY2", "SQL2");
         sqlRegistry.registerSql("KEY3", "SQL3");
     }
 
+    protected abstract UpdatableSqlRegistry createUpdatableSqlRegistry();
+
+
     @Test
     public void find() {
-        checkFindResult("SQL1", "SQL2", "SQL3");
+        checkFind("SQL1", "SQL2", "SQL3");
     }
 
-    private void checkFindResult(String expected1, String expected2, String expected3) {
-        assertThat(sqlRegistry.findSql("KEY1"), is(expected1));
-        assertThat(sqlRegistry.findSql("KEY2"), is(expected2));
-        assertThat(sqlRegistry.findSql("KEY3"), is(expected3));
-    }
 
     @Test(expected = SqlNotFoundException.class)
     public void unknownKey() {
@@ -44,7 +41,7 @@ public class ConcurrentHashMapSqlRegistryTest {
     @Test
     public void updateSingle() {
         sqlRegistry.updateSql("KEY2", "Modified2");
-        checkFindResult("SQL1", "Modified2", "SQL3");
+        checkFind("SQL1", "Modified2", "SQL3");
     }
 
     @Test
@@ -54,12 +51,19 @@ public class ConcurrentHashMapSqlRegistryTest {
         sqlmap.put("KEY3", "Modified3");
 
         sqlRegistry.updateSql(sqlmap);
-        checkFindResult("Modified1", "SQL2", "Modified3");
+        checkFind("Modified1", "SQL2", "Modified3");
     }
 
     @Test(expected = SqlUpdateFailureException.class)
     public void updateWithNotExistingKey() {
         sqlRegistry.updateSql("SQL9999", "Modified2");
+    }
+
+
+    protected void checkFind(String expected1, String expected2, String expected3) {
+        assertThat(sqlRegistry.findSql("KEY1"), is(expected1));
+        assertThat(sqlRegistry.findSql("KEY2"), is(expected2));
+        assertThat(sqlRegistry.findSql("KEY3"), is(expected3));
     }
 
 }
