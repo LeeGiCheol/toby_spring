@@ -3,6 +3,7 @@ package me.gicheol.dao;
 import me.gicheol.domain.Level;
 import me.gicheol.domain.User;
 import me.gicheol.sql.SqlService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
@@ -15,8 +16,10 @@ public class UserDaoJdbc implements UserDao {
 
     private JdbcTemplate jdbcTemplate;
 
+    @Autowired
     private SqlService sqlService;
 
+    @Autowired
     public void setDataSource(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
