@@ -29,13 +29,4 @@
 
     <tx:annotation-driven />
 
-
-    <bean id="userService" class="me.gicheol.service.UserServiceImpl">
-        <property name="userDao" ref="userDao"/>
-        <property name="mailSender" ref="mailSender"/>
-    </bean>
-
-    <bean id="testUserService" class="me.gicheol.test.UserServiceTest$TestUserService"
-          parent="userService"/>
-
 </beans>

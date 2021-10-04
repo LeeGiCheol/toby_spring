@@ -3,6 +3,9 @@ package me.gicheol.test;
 import com.mysql.jdbc.Driver;
 import me.gicheol.dao.UserDao;
 import me.gicheol.dao.UserDaoJdbc;
+import me.gicheol.service.DummyMailSender;
+import me.gicheol.service.UserService;
+import me.gicheol.service.UserServiceImpl;
 import me.gicheol.sql.SqlService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -10,6 +13,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
+import org.springframework.mail.MailSender;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
@@ -47,6 +51,29 @@ public class TestApplicationContext {
         userDao.setSqlService(this.sqlService);
 
         return userDao;
+    }
+
+    @Bean
+    public UserService userService() {
+        UserServiceImpl userService = new UserServiceImpl();
+        userService.setUserDao(userDao());
+        userService.setMailSender(mailSender());
+
+        return userService;
+    }
+
+    @Bean
+    public UserService testUserService() {
+        UserServiceTest.TestUserService testUserService = new UserServiceTest.TestUserService();
+        testUserService.setUserDao(userDao());
+        testUserService.setMailSender(mailSender());
+
+        return testUserService;
+    }
+
+    @Bean
+    public MailSender mailSender() {
+        return new DummyMailSender();
     }
 
 }
