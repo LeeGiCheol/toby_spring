@@ -8,24 +8,9 @@
                            http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.0.xsd">
 
 
-    <bean id="unmarshaller" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
-        <property name="contextPath" value="me.gicheol.sql.jaxb"/>
-    </bean>
-
-    <bean id="sqlService" class="me.gicheol.sql.OxmSqlService">
-        <property name="unmarshaller" ref="unmarshaller"/>
-        <property name="sqlRegistry" ref="sqlRegistry"/>
-    </bean>
-
-    <bean id="sqlRegistry" class="me.gicheol.sql.EmbeddedDbSqlRegistry">
-        <property name="dataSource" ref="embeddedDatabase"/>
-    </bean>
-
     <jdbc:embedded-database id="embeddedDatabase" type="HSQL">
         <jdbc:script location="classpath:/me/gicheol/sql/sql/sqlRegistrySchema.sql"/>
     </jdbc:embedded-database>
-
-    <bean id="mailSender" class="me.gicheol.service.DummyMailSender"/>
 
     <tx:annotation-driven />
 
