@@ -1,21 +1,25 @@
 package me.gicheol.test;
 
 import com.mysql.jdbc.Driver;
+import me.gicheol.dao.UserDao;
+import me.gicheol.dao.UserDaoJdbc;
+import me.gicheol.sql.SqlService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionException;
-import org.springframework.transaction.TransactionStatus;
 
 import javax.sql.DataSource;
 
 @Configuration
 @ImportResource("classpath:/test-applicationContext.xml")
 public class TestApplicationContext {
+
+    @Autowired
+    private SqlService sqlService;
 
     @Bean
     public DataSource dataSource() {
@@ -34,6 +38,15 @@ public class TestApplicationContext {
         transactionManager.setDataSource(dataSource());
 
         return transactionManager;
+    }
+
+    @Bean
+    public UserDao userDao() {
+        UserDaoJdbc userDao = new UserDaoJdbc();
+        userDao.setDataSource(dataSource());
+        userDao.setSqlService(this.sqlService);
+
+        return userDao;
     }
 
 }
