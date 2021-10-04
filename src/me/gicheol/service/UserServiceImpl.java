@@ -3,26 +3,27 @@ package me.gicheol.service;
 import me.gicheol.dao.UserDao;
 import me.gicheol.domain.Level;
 import me.gicheol.domain.User;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
-import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service("userService")
 public class UserServiceImpl implements UserService {
+
     public static final int MIN_LOGCOUNT_FOR_SILVER = 50;
     public static final int MIN_RECCOMEND_FOR_GOLD = 30;
 
+    @Autowired
     private UserDao userDao;
-    private PlatformTransactionManager transactionManager;
+
+    @Autowired
     private MailSender mailSender;
 
     public void setUserDao(UserDao userDao) {
         this.userDao = userDao;
-    }
-
-    public void setTransactionManager(PlatformTransactionManager transactionManager) {
-        this.transactionManager = transactionManager;
     }
 
     public void setMailSender(MailSender mailSender) {

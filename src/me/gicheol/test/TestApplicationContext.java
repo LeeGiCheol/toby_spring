@@ -2,16 +2,17 @@ package me.gicheol.test;
 
 import com.mysql.jdbc.Driver;
 import me.gicheol.dao.UserDao;
-import me.gicheol.dao.UserDaoJdbc;
 import me.gicheol.service.DummyMailSender;
 import me.gicheol.service.UserService;
-import me.gicheol.test.UserServiceTest.TestUserService;
 import me.gicheol.service.UserServiceImpl;
 import me.gicheol.sql.EmbeddedDbSqlRegistry;
 import me.gicheol.sql.OxmSqlService;
 import me.gicheol.sql.SqlRegistry;
 import me.gicheol.sql.SqlService;
+import me.gicheol.test.UserServiceTest.TestUserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
@@ -28,6 +29,7 @@ import static org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType.
 
 @Configuration
 @EnableTransactionManagement
+@ComponentScan(basePackages = "me.gicheol")
 public class TestApplicationContext {
 
     /**
@@ -55,24 +57,13 @@ public class TestApplicationContext {
     /**
      * 애플리케이션 로직 & 테스트용 빈
      */
-    @Bean
-    public UserDao userDao() {
-        return new UserDaoJdbc();
-    }
-
-    @Bean
-    public UserService userService() {
-        UserServiceImpl userService = new UserServiceImpl();
-        userService.setUserDao(userDao());
-        userService.setMailSender(mailSender());
-
-        return userService;
-    }
+    @Autowired
+    UserDao userDao;
 
     @Bean
     public UserService testUserService() {
         TestUserService testUserService = new TestUserService();
-        testUserService.setUserDao(userDao());
+        testUserService.setUserDao(this.userDao);
         testUserService.setMailSender(mailSender());
 
         return testUserService;
