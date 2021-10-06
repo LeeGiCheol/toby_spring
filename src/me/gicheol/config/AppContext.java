@@ -4,7 +4,9 @@ import com.mysql.jdbc.Driver;
 import me.gicheol.service.DummyMailSender;
 import me.gicheol.service.UserService;
 import me.gicheol.test.UserServiceTest.TestUserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.*;
+import org.springframework.core.env.Environment;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.mail.MailSender;
@@ -16,9 +18,13 @@ import javax.sql.DataSource;
 
 @Configuration
 @EnableTransactionManagement
-@ComponentScan(basePackages = "me.gicheol")
 @Import(SqlServiceContext.class)
+@PropertySource("/database.properties")
+@ComponentScan(basePackages = "me.gicheol")
 public class AppContext {
+
+    @Autowired
+    Environment env;
 
     /**
      * DB연결과 트랜잭션
@@ -26,10 +32,16 @@ public class AppContext {
     @Bean
     public DataSource dataSource() {
         SimpleDriverDataSource dataSource = new SimpleDriverDataSource();
-        dataSource.setDriverClass(Driver.class);
-        dataSource.setUrl("jdbc:mysql://localhost/test_toby_spring?serverTimezone=UTC");
-        dataSource.setUsername("toby_spring");
-        dataSource.setPassword("toby_spring");
+
+        try {
+            dataSource.setDriverClass((Class<? extends java.sql.Driver>) Class.forName(env.getProperty("db.driverClass")));
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
+        dataSource.setUrl(env.getProperty("db.url"));
+        dataSource.setUsername(env.getProperty("db.username"));
+        dataSource.setPassword(env.getProperty("db.password"));
 
         return dataSource;
     }
