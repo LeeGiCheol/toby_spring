@@ -1,5 +1,6 @@
 package me.gicheol.test;
 
+import me.gicheol.config.AppContext;
 import me.gicheol.dao.MockUserDao;
 import me.gicheol.dao.UserDao;
 import me.gicheol.domain.Level;
@@ -12,23 +13,19 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.dao.TransientDataAccessResourceException;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.DefaultTransactionDefinition;
 
-import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.List;
 
@@ -40,8 +37,9 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.*;
 
+@ActiveProfiles("test")
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = TestApplicationContext.class)
+@ContextConfiguration(classes = AppContext.class)
 public class UserServiceTest {
 
     @Autowired
@@ -62,6 +60,8 @@ public class UserServiceTest {
     @Autowired
     MailSender mailSender;
 
+    @Autowired
+    DefaultListableBeanFactory bf;
 
     List<User> users;
 
@@ -190,6 +190,13 @@ public class UserServiceTest {
         userService.add(users.get(1));
     }
 
+    @Test
+    public void beans() {
+        for (String name : bf.getBeanDefinitionNames()) {
+            System.out.println(name + " \t " + bf.getBean(name).getClass().getName());
+        }
+    }
+
     private void checkLevelUpgraded(User user, boolean upgraded) {
         User userUpdate = userDao.get(user.getId());
 
@@ -200,7 +207,7 @@ public class UserServiceTest {
         }
     }
 
-    static class TestUserService extends UserServiceImpl {
+    public static class TestUserService extends UserServiceImpl {
         private String id = "LEEGICHEOL";
 
         protected void upgradeLevel(User user) {

@@ -1,5 +1,6 @@
 package me.gicheol.test;
 
+import me.gicheol.config.AppContext;
 import me.gicheol.dao.UserDao;
 import me.gicheol.domain.Level;
 import me.gicheol.domain.User;
@@ -22,7 +23,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = TestApplicationContext.class)
+@ContextConfiguration(classes = { AppContext.class })
 public class UserDaoTest {
 
     @Autowired
