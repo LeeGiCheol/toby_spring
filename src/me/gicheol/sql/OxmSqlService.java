@@ -50,7 +50,7 @@ public class OxmSqlService implements SqlService {
 
         private Unmarshaller unmarshaller;
 
-        private Resource sqlmap = new ClassPathResource("sqlmap.xml", UserDao.class);
+        private Resource sqlmap = new ClassPathResource("/sqlmap.xml");
 
         public void setUnmarshaller(Unmarshaller unmarshaller) {
             this.unmarshaller = unmarshaller;

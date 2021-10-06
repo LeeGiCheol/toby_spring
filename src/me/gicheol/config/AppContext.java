@@ -1,12 +1,15 @@
 package me.gicheol.config;
 
 import com.mysql.jdbc.Driver;
+import me.gicheol.dao.UserDao;
 import me.gicheol.service.DummyMailSender;
 import me.gicheol.service.UserService;
 import me.gicheol.test.UserServiceTest.TestUserService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.*;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.mail.MailSender;
@@ -21,7 +24,7 @@ import javax.sql.DataSource;
 @Import(SqlServiceContext.class)
 @PropertySource("/database.properties")
 @ComponentScan(basePackages = "me.gicheol")
-public class AppContext {
+public class AppContext implements SqlMapConfig {
 
     @Value("${db.driverClass}")
     Class<? extends Driver> driverClass;
@@ -63,6 +66,11 @@ public class AppContext {
     @Bean
     public static PropertySourcesPlaceholderConfigurer placeholderConfigurer() {
         return new PropertySourcesPlaceholderConfigurer();
+    }
+
+    @Override
+    public Resource getSqlMapResource() {
+        return new ClassPathResource("sqlmap.xml", UserDao.class);
     }
 
 
