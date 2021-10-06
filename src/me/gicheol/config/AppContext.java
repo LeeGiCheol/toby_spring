@@ -1,6 +1,7 @@
 package me.gicheol.config;
 
 import com.mysql.jdbc.Driver;
+import me.gicheol.annotation.EnableSqlService;
 import me.gicheol.dao.UserDao;
 import me.gicheol.service.DummyMailSender;
 import me.gicheol.service.UserService;
@@ -20,8 +21,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import javax.sql.DataSource;
 
 @Configuration
+@EnableSqlService
 @EnableTransactionManagement
-@Import(SqlServiceContext.class)
 @PropertySource("/database.properties")
 @ComponentScan(basePackages = "me.gicheol")
 public class AppContext implements SqlMapConfig {
